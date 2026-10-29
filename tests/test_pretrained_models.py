@@ -48,6 +48,11 @@ def test_pretrained_model(name):
     reason = _skip_reason(test)
     if reason:
         pytest.skip(reason)
+    if test.model_type == "keras":
+        # Keras names layers from a per-process counter (input_1, input_2, ...) and the
+        # yaml pins those names; reset it so the result does not depend on test order (xdist).
+        import tensorflow as tf  # pylint: disable=import-outside-toplevel
+        tf.keras.backend.clear_session()
     try:
         result = test.run_test(name, backend=_BACKEND, opset=_OPSET)
     except requests.exceptions.HTTPError as e:
