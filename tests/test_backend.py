@@ -5632,7 +5632,7 @@ class BackendTests(Tf2OnnxBackendTestBase):
     @skip_tfjs("TFJS does not initialize table")
     @skip_onnx_checker("ONNX can't do type inference on CategoryMapper")
     def test_hashtable_lookup(self):
-        filnm = "vocab.tmp"
+        filnm = self._testMethodName + "_vocab.tmp"
         words = ["apple", "pear", "banana", "cherry", "grape"]
         query = np.array(['cherry'], dtype=object)
         with open(filnm, "w") as f:
@@ -5650,7 +5650,7 @@ class BackendTests(Tf2OnnxBackendTestBase):
     @skip_tfjs("TFJS does not initialize table")
     @skip_onnx_checker("ONNX can't do type inference on CategoryMapper")
     def test_hashtable_lookup_invert(self):
-        filnm = "vocab.tmp"
+        filnm = self._testMethodName + "_vocab.tmp"
         words = ["apple", "pear", "banana", "cherry", "grape"]
         query = np.array([3], dtype=np.int64)
         with open(filnm, "w") as f:
@@ -5667,7 +5667,7 @@ class BackendTests(Tf2OnnxBackendTestBase):
     @check_opset_min_version(8, "CategoryMapper")
     @skip_tfjs("TFJS does not initialize table")
     def test_hashtable_lookup_const(self):
-        filnm = "vocab.tmp"
+        filnm = self._testMethodName + "_vocab.tmp"
         words = ["apple", "pear", "banana", "cherry ♥", "grape"]
         query_val = np.array(['cherry ♥', 'banana'], dtype=object).reshape((1, 2, 1))
         with open(filnm, "w", encoding='UTF-8') as f:
@@ -5685,7 +5685,7 @@ class BackendTests(Tf2OnnxBackendTestBase):
     @check_opset_min_version(8, "CategoryMapper")
     @skip_tfjs("TFJS does not initialize table")
     def test_hashtable_lookup_invert_const(self):
-        filnm = "vocab.tmp"
+        filnm = self._testMethodName + "_vocab.tmp"
         words = ["apple", "pear", "banana", "cherry", "grape"]
         query_val = np.array([3, 2], dtype=np.int64).reshape((1, 2, 1))
         with open(filnm, "w", encoding='UTF-8') as f:
@@ -5702,7 +5702,7 @@ class BackendTests(Tf2OnnxBackendTestBase):
 
     @skip_tfjs("TFJS does not initialize table")
     def test_hashtable_size(self):
-        filnm = "vocab.tmp"
+        filnm = self._testMethodName + "_vocab.tmp"
         words = ["apple", "pear", "banana", "cherry", "grape"]
         query = np.array(['cherry'], dtype=object)
         with open(filnm, "w") as f:

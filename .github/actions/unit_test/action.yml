@@ -58,7 +58,9 @@ runs:
         export TF2ONNX_SKIP_TFLITE_TESTS
         export TF2ONNX_SKIP_TFJS_TESTS=True
         export TF2ONNX_SKIP_TF_TESTS=False
-        python -m pytest --cov=tf2onnx --cov-report=term --disable-pytest-warnings -r s tests --cov-append --junitxml=junit/test-results.xml
+        python -m pytest -n logical --cov=tf2onnx --cov-report=term --disable-pytest-warnings -r s tests --ignore=tests/test_pretrained_models.py --cov-append --junitxml=junit/test-results.xml
+        # Pretrained-model conversions need up to ~8 GB each; run them serially so they don't stack.
+        python -m pytest --cov=tf2onnx --cov-report=term --disable-pytest-warnings -r s tests/test_pretrained_models.py --cov-append --junitxml=junit/test-results-pretrained.xml
         ls
 
     - name: Run unit_test (Windows)
@@ -71,5 +73,8 @@ runs:
         $env:TF2ONNX_TEST_BACKEND = "onnxruntime"
         $env:TF2ONNX_SKIP_TFJS_TESTS = "True"
         $env:TF2ONNX_SKIP_TF_TESTS = "False"
-        python -m pytest --cov=tf2onnx --cov-report=term --disable-pytest-warnings -r s tests --cov-append --junitxml=junit/test-results.xml
+        python -m pytest -n logical --cov=tf2onnx --cov-report=term --disable-pytest-warnings -r s tests --ignore=tests/test_pretrained_models.py --cov-append --junitxml=junit/test-results.xml
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        # Pretrained-model conversions need up to ~8 GB each; run them serially so they don't stack.
+        python -m pytest --cov=tf2onnx --cov-report=term --disable-pytest-warnings -r s tests/test_pretrained_models.py --cov-append --junitxml=junit/test-results-pretrained.xml
         ls
