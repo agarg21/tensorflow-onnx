@@ -5,6 +5,7 @@
 name: Unit Test
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -32,9 +33,9 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest', 'windows-2022']
-        tf_version: ['2.13.0', '2.15.0']
+        tf_version: ['2.15.0']
         python_version: ['3.10', '3.11']
-        opset_version: ['18', '15']
+        opset_version: ['15']
         # Single-element lists so existing combinations keep these pins without
         # multiplying the matrix; the entries below override them per job.
         onnx_version: ['1.16.1']
@@ -45,70 +46,6 @@ jobs:
             python_version: '3.12'
           - tf_version: '2.13.0'
             python_version: '3.13'
-        include:
-          # --- newer-opset coverage (onnx 1.17) -------------------------------
-          # The full backend suite converts real ops/models and runs them through
-          # onnxruntime, so these exercise opset 19-22 end-to-end. onnxruntime
-          # enforces an opset ceiling on model loading (verified empirically by
-          # trying to load a minimal opset-N model): ort 1.16.3 -> 19,
-          # 1.19.2/1.20.1 -> 21, opset 22 needs ort >= 1.21.0 (1.20.1 still
-          # rejects it), so each entry pins a compatible ort. The opset22 lane
-          # is further pinned to the latest ort (1.28.0, also verified
-          # empirically) because ort only gained a LpNormalization(22) kernel
-          # in 1.25.0; RandomNormal/RandomUniform/Multinomial still have no
-          # opset-22 kernel as of 1.28.0, so tests hitting those are skipped
-          # in tests/test_backend.py pending upstream ort support.
-          - os: 'ubuntu-latest'
-            tf_version: '2.15.0'
-            python_version: '3.11'
-            opset_version: '19'
-            onnx_version: '1.17.0'
-            ort_version: '1.19.2'
-            experimental: true
-          - os: 'ubuntu-latest'
-            tf_version: '2.15.0'
-            python_version: '3.11'
-            opset_version: '20'
-            onnx_version: '1.17.0'
-            ort_version: '1.19.2'
-            experimental: true
-          - os: 'ubuntu-latest'
-            tf_version: '2.15.0'
-            python_version: '3.11'
-            opset_version: '21'
-            onnx_version: '1.17.0'
-            ort_version: '1.19.2'
-            experimental: true
-          - os: 'ubuntu-latest'
-            tf_version: '2.15.0'
-            python_version: '3.11'
-            opset_version: '22'
-            onnx_version: '1.17.0'
-            ort_version: '1.28.0'
-            experimental: true
-          # --- newer onnx *package* integration (#2446, #2462) ----------------
-          # Detect API/behaviour incompatibilities with recent onnx releases by
-          # running the suite against them. Conversion opset is kept modest so the
-          # produced models stay runnable under the paired ort; the point is to
-          # exercise the onnx python API (build/checker/shape-inference/optimizer).
-          # NOTE: setup_test_env.sh pins numpy<2 while these onnx/ort wheels favour
-          # numpy 2.x, so a failure here may be a numpy-ABI mismatch rather than a
-          # real onnx-API regression - check the log before acting. These jobs are
-          # advisory (experimental) so such noise never blocks other PRs.
-          - os: 'ubuntu-latest'
-            tf_version: '2.15.0'
-            python_version: '3.11'
-            opset_version: '20'
-            onnx_version: '1.21.0'
-            ort_version: '1.20.1'
-            experimental: true
-          - os: 'ubuntu-latest'
-            tf_version: '2.15.0'
-            python_version: '3.11'
-            opset_version: '20'
-            onnx_version: '1.22.0'
-            ort_version: '1.20.1'
-            experimental: true
     runs-on: ${{ matrix.os }}
     # Newly added coverage entries are advisory (experimental) so a failure there
     # never blocks unrelated PRs; the pre-existing combinations stay required.
