@@ -18,9 +18,6 @@ _SKIP_TF = os.environ.get("TF2ONNX_SKIP_TF_TESTS", "FALSE").upper() == "TRUE"
 _SKIP_TFLITE = os.environ.get("TF2ONNX_SKIP_TFLITE_TESTS", "FALSE").upper() == "TRUE"
 _SKIP_TFJS = os.environ.get("TF2ONNX_SKIP_TFJS_TESTS", "TRUE").upper() == "TRUE"
 
-# Each test converts a large model; keep them on one xdist worker so their peak memory does not stack.
-pytestmark = pytest.mark.xdist_group("pretrained_models")
-
 _TESTS = load_tests_from_yaml(_CONFIG)
 _TEST_IDS = sorted(_TESTS.keys())
 
