@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'windows-2022']
+        os: ['ubuntu-22.04', 'windows-2022']
         tf_version: ['2.15.0']
         python_version: ['3.10', '3.11']
         opset_version: ['15']
@@ -84,7 +84,7 @@ jobs:
     # it can only fail for a PR that actually changes the handled-op set - never
     # for unrelated changes. `continue-on-error` keeps it non-blocking while it
     # beds in; promote to a required check once the baseline is trusted.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     continue-on-error: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
