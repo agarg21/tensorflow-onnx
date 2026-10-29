@@ -53,6 +53,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Memory logger (fork diagnostic)
+        if: runner.os == 'Linux'
+        run: nohup sh -c 'while :; do echo "$(date +%T) $(free -m | sed -n 2p)"; sleep 10; done' > /tmp/mem.log 2>&1 &
       - uses: ./.github/actions/unit_test
         with:
           tf_version: ${{ matrix.tf_version }}
@@ -61,6 +64,9 @@ jobs:
           onnx_version: ${{ matrix.onnx_version }}
           opset_version: ${{ matrix.opset_version }}
           skip_tflite: 'False'
+      - name: Memory log (fork diagnostic)
+        if: always() && runner.os == 'Linux'
+        run: sort -k4 -n /tmp/mem.log | tail -5; echo ---; tail -40 /tmp/mem.log
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
